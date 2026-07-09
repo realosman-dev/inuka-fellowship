@@ -1,0 +1,104 @@
+import nbformat as nbf
+
+# Create a new notebook object
+nb = nbf.v4.new_notebook()
+
+# Define the cells for the notebook
+cells = [
+    # Cell 1: Title and Introduction (Markdown)
+    nbf.v4.new_markdown_cell("""
+# Operational KPI Calculator & Analytics Pipeline
+**Domain:** Operations → Data → Insight → Action  
+**Author:** Siraj Mohamed  
+
+This notebook demonstrates how to ingest operational sensor data, calculate key performance indicators (KPIs) using Python data structures, and trigger automated alerts based on operational thresholds.
+    """),
+    
+    # Cell 2: Imports (Code)
+    nbf.v4.new_code_cell("""
+import json
+from datetime import datetime
+    """),
+
+    # Cell 3: Data Collection Simulation (Markdown)
+    nbf.v4.new_markdown_cell("""
+## Step 1: Data Collection
+In a real-world SRE/DevOps environment, this data would be streamed via APIs in JSON format. Here, we simulate the ingestion of hourly sensor data using Python Lists and Dictionaries.
+    """),
+
+    # Cell 4: Data Ingestion (Code)
+    nbf.v4.new_code_cell("""
+# Simulating JSON data received from IoT sensors on Assembly Line B
+sensor_data_json = '''
+[
+    {"hour": 1, "defect_rate": 2.1, "uptime": 98},
+    {"hour": 2, "defect_rate": 2.5, "uptime": 95},
+    {"hour": 3, "defect_rate": 3.0, "uptime": 92},
+    {"hour": 4, "defect_rate": 4.5, "uptime": 88},
+    {"hour": 5, "defect_rate": 5.2, "uptime": 85}
+]
+'''
+
+# Parsing the JSON string into a Python list of dictionaries
+sensor_data = json.loads(sensor_data_json)
+print(f"Successfully ingested {len(sensor_data)} hours of telemetry data.")
+    """),
+
+    # Cell 5: Data Processing Logic (Markdown)
+    nbf.v4.new_markdown_cell("""
+## Step 2: Data Processing & Insight Generation
+We will use `for` loops to iterate through the data and `if/else` conditional statements to evaluate our operational health against the target KPIs.
+    """),
+
+    # Cell 6: KPI Calculation Function (Code)
+    nbf.v4.new_code_cell("""
+def analyze_operations(data, target_defect_rate):
+    # Extracting data using list comprehension and loops
+    defect_rates = [entry['defect_rate'] for entry in data]
+    uptimes = [entry['uptime'] for entry in data]
+    
+    # Calculating averages
+    avg_defect = sum(defect_rates) / len(defect_rates)
+    avg_uptime = sum(uptimes) / len(uptimes)
+    
+    # Generating Insights using conditional logic
+    if avg_defect > target_defect_rate:
+        status = "CRITICAL"
+        alert = "ALERT: Defect rate exceeds target. Immediate maintenance required."
+    else:
+        status = "STABLE"
+        alert = "Operations running within acceptable parameters."
+        
+    return {
+        "avg_defect_rate": round(avg_defect, 2),
+        "avg_uptime": round(avg_uptime, 2),
+        "status": status,
+        "alert_message": alert
+    }
+
+# Execute the analysis
+target = 3.0
+results = analyze_operations(sensor_data, target)
+
+# Display the insights
+print("--- OPERATIONAL INSIGHTS ---")
+for key, value in results.items():
+    print(f"{key.replace('_', ' ').title()}: {value}")
+    """),
+
+    # Cell 7: Action / Output (Markdown)
+    nbf.v4.new_markdown_cell("""
+## Step 3: Action
+Based on the output above, the system has flagged a **CRITICAL** status. In an automated SRE pipeline, this output would trigger a webhook to PagerDuty or Slack to notify the on-call engineering team to recalibrate Conveyor Sensor 3.
+    """)
+]
+
+# Add cells to the notebook
+nb['cells'] = cells
+
+# Save the notebook to a file
+file_name = "operational_kpi_analyzer.ipynb"
+with open(file_name, 'w') as f:
+    nbf.write(nb, f)
+
+print(f"Success! '{file_name}' has been created in your current directory.")
